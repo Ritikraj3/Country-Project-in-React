@@ -42,9 +42,9 @@ export default function CountryDetail() {
 
     Promise.all(
       data.borders.map((border) => {
-        return fetch(`https://restcountries.com/v3.1/alpha/${border}`)
+        return fetch(`https://restcountries.com/v3.1/alpha/${border}?fields=name`)
           .then((res) => res.json())
-          .then(([borderCountry]) => borderCountry.name.common);
+          .then((borderCountry) => Array.isArray(borderCountry) ? borderCountry[0].name.common : borderCountry.name.common);
       })
     ).then((borders) => {
       setTimeout(() =>
@@ -59,10 +59,10 @@ export default function CountryDetail() {
       return;
     }
 
-    fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true`)
+    fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true&fields=name,population,region,subregion,capital,flags,tld,languages,currencies,borders`)
       .then((res) => res.json())
-      .then(([data]) => {
-        updateCountryData(data);
+      .then((data) => {
+        updateCountryData(Array.isArray(data) ? data[0] : data);
       })
       .catch((err) => {
         setNotFound(true);
